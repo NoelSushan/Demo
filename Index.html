@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .delete-btn {
+            cursor: pointer;
+            color: red;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #emptyMessage {
+            text-align: center;
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+            display: none;
+        }
+
+        form {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Table</h1>
+    <form id="tableForm">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Designation</th>
+                    <th>Joining Date</th>
+                    <th>End Date</th>
+                    <th>Skills</th>
+                    <th>Job Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p id="emptyMessage">Table is empty</p>
+        <div id="buttons">
+            <button type="button" onclick="addRow()">Add More</button>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </div>
+    </form>
+
+    <script>
+        function addRow() {
+            const tableBody = document.querySelector('#dataTable tbody');
+            const emptyMessage = document.getElementById('emptyMessage');
+            emptyMessage.style.display = 'none';
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td><input type="text" name="company" placeholder="Enter company name" required></td>
+                <td><input type="text" name="designation" placeholder="Enter designation" required></td>
+                <td><input type="date" name="joiningDate" required></td>
+                <td><input type="date" name="endDate" required></td>
+                <td>
+                    <select name="skills" required>
+                        <option value="">Select</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="Python">Python</option>
+                        <option value="Java">Java</option>
+                    </select>
+                </td>
+                <td>
+                    <label><input type="radio" name="jobType_${Date.now()}" value="Full Time" required> Full Time</label>
+                    <label><input type="radio" name="jobType_${Date.now()}" value="Part Time" required> Part Time</label>
+                </td>
+                <td><span class="delete-btn" onclick="deleteRow(this)">&times;</span></td>
+            `;
+
+            tableBody.appendChild(row);
+        }
+
+        function deleteRow(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+
+            const tableBody = document.querySelector('#dataTable tbody');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            if (!tableBody.children.length) {
+                emptyMessage.style.display = 'block';
+            }
+        }
+
+        function submitForm() {
+            const rows = document.querySelectorAll('#dataTable tbody tr');
+
+            if (rows.length === 0) {
+                alert('Enter at least one row');
+                return;
+            }
+
+            for (const row of rows) {
+                const inputs = row.querySelectorAll('input, select');
+                for (const input of inputs) {
+                    if (!input.value) {
+                        alert('All fields must be filled');
+                        return;
+                    }
+                }
+
+                const joiningDate = row.querySelector('input[name="joiningDate"]').value;
+                const endDate = row.querySelector('input[name="endDate"]').value;
+
+                if (new Date(joiningDate) > new Date(endDate)) {
+                    alert('Joining date cannot be after End date');
+                    return;
+                }
+            }
+
+            alert('Form submitted successfully!');
+            // Redirect to next page or perform further actions
+        }
+    </script>
+</body>
+</html>
